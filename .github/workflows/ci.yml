@@ -56,7 +56,6 @@ jobs:
         uses: elpete/setup-commandbox@v1.0.0
 
       - name: Install Test Harness Dependencies
-        working-directory: ./tests
         run: |
           box install
       - name: Start ${{ matrix.cfengine }} Server
