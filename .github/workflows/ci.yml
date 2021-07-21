@@ -7,9 +7,6 @@ on:
       - development
       - master
 
-env:
-  MODULE_ID: finnhub
-
 jobs:
   #############################################
   # Tests First baby! We fail, no build :(
@@ -18,9 +15,6 @@ jobs:
     name: Tests
     if: "!contains(github.event.head_commit.message, '__SEMANTIC RELEASE VERSION UPDATE__')"
     runs-on: ubuntu-20.04
-    env:
-      DB_USER: root
-      DB_PASSWORD: root
     strategy:
       fail-fast: false
       matrix:
@@ -41,8 +35,8 @@ jobs:
           # Setup .env
           touch .env
           # ENV
-          #printf "FINNHUB_API_KEY=${{ env.FINNHUB_API_KEY }}\n" >> tests/.env
-          #printf "FINNHUB_API_URL=${{ env.FINNHUB_API_URL }}\n" >> tests/.env
+          #printf "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}\n" >> tests/.env
+          #printf "FINNHUB_API_URL=${{ secrets.FINNHUB_API_URL }}\n" >> tests/.env
 
       - name: Cache CommandBox Dependencies
         uses: actions/cache@v1

@@ -17,10 +17,6 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-20.04
-    env:
-      MODULE_ID: finnhub
-      DB_USER: root
-      DB_PASSWORD: root
     strategy:
       fail-fast: false
       matrix:
@@ -41,8 +37,8 @@ jobs:
           # Setup .env
           touch .env
           # ENV
-          #printf "FINNHUB_API_KEY=${{ env.FINNHUB_API_KEY }}\n" >> tests/.env
-          #printf "FINNHUB_API_URL=${{ env.FINNHUB_API_URL }}\n" >> tests/.env
+          #printf "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}\n" >> tests/.env
+          #printf "FINNHUB_API_URL=${{ secrets.FINNHUB_API_URL }}\n" >> tests/.env
       - name: Setup CommandBox
         uses: elpete/setup-commandbox@v1.0.0
 
@@ -73,6 +69,7 @@ jobs:
         working-directory: ./tests
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
