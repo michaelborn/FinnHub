@@ -32,13 +32,13 @@ jobs:
           java-version: "11"
 
       - name: Setup Environment For Testing Process
-        working-directory: ./tests
         run: |
           # Setup .env
           touch .env
           # ENV
-          #printf "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}\n" >> tests/.env
-          #printf "FINNHUB_API_URL=${{ secrets.FINNHUB_API_URL }}\n" >> tests/.env
+          printf "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}\n" >> .env
+          printf "FINNHUB_API_URL=${{ secrets.FINNHUB_API_URL }}\n" >> .env
+
       - name: Setup CommandBox
         uses: elpete/setup-commandbox@v1.0.0
 
