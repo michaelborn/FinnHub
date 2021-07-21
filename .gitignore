@@ -1,0 +1,8 @@
+.env
+.vscode
+.swp
+
+# dependencies
+modules
+tests/resources/app/coldbox
+tests/testbox
