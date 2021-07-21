@@ -17,14 +17,10 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-20.04
-    env:
-      MODULE_ID: finnhub
-      DB_USER: root
-      DB_PASSWORD: root
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -36,31 +32,31 @@ jobs:
           java-version: "11"
 
       - name: Setup Environment For Testing Process
-        working-directory: ./tests
         run: |
           # Setup .env
           touch .env
           # ENV
-          #printf "FINNHUB_API_KEY=${{ env.FINNHUB_API_KEY }}\n" >> tests/.env
-          #printf "FINNHUB_API_URL=${{ env.FINNHUB_API_URL }}\n" >> tests/.env
+          printf "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}\n" >> .env
+          printf "FINNHUB_API_URL=${{ secrets.FINNHUB_API_URL }}\n" >> .env
+
       - name: Setup CommandBox
         uses: elpete/setup-commandbox@v1.0.0
 
       - name: Install Dependencies
-        working-directory: ./tests
         run: |
           box install
+
       - name: Start ${{ matrix.cfengine }} Server
-        working-directory: ./tests
         run: |
           box server start cfengine=${{ matrix.cfengine }} port=60299 --noSaveSettings --debug
           curl http://127.0.0.1:60299
+
       - name: Run Tests
-        working-directory: ./tests
         run: |
           mkdir tests/results
           box package set testbox.runner="http://localhost:60299/tests/runner.cfm"
-          box testbox run --verbose outputFile=tests/results outputFormats=json,antjunit
+          box testbox run --verbose outputFile=tests/results/result outputFormats=json,antjunit
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
@@ -73,6 +69,7 @@ jobs:
         working-directory: ./tests
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2

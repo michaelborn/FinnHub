@@ -1,14 +1,11 @@
 name: FinnHub CI
 
-# Only on Development we build snapshots
 on:
   push:
     branches:
       - development
       - master
-
-env:
-  MODULE_ID: finnhub
+      - main
 
 jobs:
   #############################################
@@ -18,13 +15,10 @@ jobs:
     name: Tests
     if: "!contains(github.event.head_commit.message, '__SEMANTIC RELEASE VERSION UPDATE__')"
     runs-on: ubuntu-20.04
-    env:
-      DB_USER: root
-      DB_PASSWORD: root
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -36,13 +30,12 @@ jobs:
           java-version: "11"
 
       - name: Setup Environment For Testing Process
-        working-directory: ./tests
         run: |
           # Setup .env
           touch .env
           # ENV
-          #printf "FINNHUB_API_KEY=${{ env.FINNHUB_API_KEY }}\n" >> tests/.env
-          #printf "FINNHUB_API_URL=${{ env.FINNHUB_API_URL }}\n" >> tests/.env
+          printf "FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}\n" >> .env
+          printf "FINNHUB_API_URL=${{ secrets.FINNHUB_API_URL }}\n" >> .env
 
       - name: Cache CommandBox Dependencies
         uses: actions/cache@v1
@@ -56,25 +49,25 @@ jobs:
         uses: elpete/setup-commandbox@v1.0.0
 
       - name: Install Test Harness Dependencies
-        working-directory: ./tests
         run: |
           box install
+
       - name: Start ${{ matrix.cfengine }} Server
-        working-directory: ./tests
         run: |
           box server start cfengine=${{ matrix.cfengine }} port=60299 --noSaveSettings --debug
           curl http://127.0.0.1:60299
+
       - name: Run Tests
-        working-directory: ./tests
         run: |
           mkdir tests/results
           box package set testbox.runner="http://localhost:60299/tests/runner.cfm"
-          box testbox run --verbose outputFile=tests/results outputFormats=json,antjunit
+          box testbox run --verbose outputFile=tests/results/result outputFormats=json,antjunit
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
-          files: tests/tests/results/**/*.xml
+          files: tests/results/*.xml
           check_name: "${{ matrix.cfengine }} Test Results"
 
       - name: Upload Test Results Artifacts
@@ -128,5 +121,5 @@ jobs:
       
       - name: Run Semantic Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: box semantic-release
