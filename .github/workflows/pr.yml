@@ -58,9 +58,9 @@ jobs:
       - name: Run Tests
         working-directory: ./tests
         run: |
-          mkdir tests/results
+          mkdir results
           box package set testbox.runner="http://localhost:60299/tests/runner.cfm"
-          box testbox run --verbose outputFile=tests/results outputFormats=json,antjunit
+          box testbox run --verbose outputFile=results outputFormats=json,antjunit
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
