@@ -23,11 +23,11 @@
     "private":false,
     "repository":{
         "type":"git",
-        "URL":"https://github.com/michaelborn_me/finnhub"
+        "URL":"https://github.com/michaelborn/finnhub"
     },
-    "bugs":"https://github.com/michaelborn_me/finnhub/issues",
+    "bugs":"https://github.com/michaelborn/finnhub/issues",
     "scripts":{
-        "postVersion":"package set location='michaelborn_me/finnhub#v`package version`'",
+        "postVersion":"package set location='michaelborn/finnhub#v`package version`'",
         "onRelease":"publish",
         "postPublish":"!git push --follow-tags"
     },
