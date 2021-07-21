@@ -45,8 +45,8 @@ jobs:
       - name: Install Dependencies
         run: |
           box install
+
       - name: Start ${{ matrix.cfengine }} Server
-        working-directory: ./tests
         run: |
           box server start cfengine=${{ matrix.cfengine }} port=60299 --noSaveSettings --debug
           curl http://127.0.0.1:60299
@@ -55,7 +55,7 @@ jobs:
         run: |
           mkdir tests/results
           box package set testbox.runner="http://localhost:60299/tests/runner.cfm"
-          box testbox run --verbose outputFile=tests/results outputFormats=json,antjunit
+          box testbox run --verbose outputFile=tests/results/result outputFormats=json,antjunit
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
